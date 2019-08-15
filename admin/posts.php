@@ -138,7 +138,7 @@ $begin = $begin < 1 ? 1 : $begin;
                 <?php echo  convert_date($key['created']); ?></td>
                 <td class="text-center"><?php echo convert_status($key['status']); ?></td>
                 <td class="text-center">
-                  <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                  <a href="/admin/post-add.php?post_id=<?php echo $key['id'] ?>" class="btn btn-default btn-xs">编辑</a>
                   <a href="/admin/delete.php?post_id=<?php echo $key['id'] ?>" class="btn btn-danger btn-xs">删除</a>
                 </td>
               </tr>

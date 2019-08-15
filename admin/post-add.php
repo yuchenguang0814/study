@@ -25,6 +25,7 @@ if(empty($_FILES['feature']['name'])){
     $GLOBALS['message'] = '上传头像失败';
     return;
   }
+
 if(empty($_POST['category'])){
 $GLOBALS['message'] = "请选择分类";
 return;
@@ -43,11 +44,21 @@ return;
  $status = $_POST['status'];
  $category_id = $_POST['category'];
  $user_id = $_SESSION['current_login_user']['id'];
- var_dump($title, $content,$slug,$feature, $created,$status,$category_id,$user_id);
+xiu_execute("INSERT INTO posts VALUES (null, '{$slug}','{$title}', '{$feature}', '{$created}','{$content}',0,0,'{$status}',".$user_id.",".$category_id.");");
  }
-if($_SERVER['REQUEST_METHOD']==='POST'){
-add_post();
+
+if(empty($_GET['post_id'])){
+    if($_SERVER['REQUEST_METHOD']==='POST'){
+        add_post();
+    }
+}else{
+    $postvalue = xiu_fetch_one("SELECT * FROM posts where id ='{$_GET['post_id']}'");
+    if($_SERVER['REQUEST_METHOD']==='POST'){
+        edit_post();
+    }
+
 }
+
 
 $categories = xiu_fetch_all("SELECT * FROM categories;");
  ?>
@@ -79,8 +90,56 @@ $categories = xiu_fetch_all("SELECT * FROM categories;");
         <strong>错误！</strong><?php echo $message ?>
       </div>
       <?php endif ?>
-
-      <form class="row" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" enctype="multipart/form-data">
+      <?php if (isset($postvalue)): ?>
+        <form class="row" action="<?php echo $_SERVER['PHP_SELF'] ?>?post_id=<?php echo $postvalue['id'] ?>" method="post" enctype="multipart/form-data">
+        <div class="col-md-9">
+          <div class="form-group">
+            <label for="title">标题</label>
+            <input id="title" class="form-control input-lg" name="title" type="text" placeholder="<?php echo $postvalue['title'] ?>">
+          </div>
+          <div class="form-group">
+            <label for="content">标题</label>
+            <script type="text/plain" id="content" name="content"><?php echo $postvalue['content'] ?></script>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="slug">别名</label>
+            <input id="slug" class="form-control" name="slug" type="text" placeholder="<?php echo $postvalue['slug'] ?>">
+            <p class="help-block">https://zce.me/post/<strong>slug</strong></p>
+          </div>
+          <div class="form-group">
+            <label for="feature">特色图像</label>
+            <!-- show when image chose -->
+            <img src="<?php echo $postvalue['feature'] ?>" class="help-block thumbnail" style="display: block">
+            <input id="feature" class="form-control" name="feature" type="file">
+          </div>
+          <div class="form-group">
+            <label for="category">所属分类</label>
+            <select id="category" class="form-control" name="category">
+            <?php foreach ($categories as $key): ?>
+            <option value="<?php echo $key['id'] ?>" <?php echo $postvalue['category_id']==$key['id']?'selected':''; ?>><?php echo $key['name'] ?></option>
+            <?php endforeach ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="created">发布时间</label>
+            <input id="created" class="form-control" name="created" type="datetime-local">
+          </div>
+          <div class="form-group">
+            <label for="status">状态</label>
+            <select id="status" class="form-control" name="status">
+              <option value="drafted">草稿</option>
+              <option value="published">已发布</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">编辑</button>
+          </div>
+        </div>
+      </form>
+      <?php else: ?>
+          <form class="row" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" enctype="multipart/form-data">
         <div class="col-md-9">
           <div class="form-group">
             <label for="title">标题</label>
@@ -100,7 +159,7 @@ $categories = xiu_fetch_all("SELECT * FROM categories;");
           <div class="form-group">
             <label for="feature">特色图像</label>
             <!-- show when image chose -->
-            <img src="<?php echo $touxiang ?>" class="help-block thumbnail" style="display: block">
+            <img src="<?php echo $touxiang ?>" class="help-block thumbnail" style="display: none">
             <input id="feature" class="form-control" name="feature" type="file">
           </div>
           <div class="form-group">
@@ -127,6 +186,7 @@ $categories = xiu_fetch_all("SELECT * FROM categories;");
           </div>
         </div>
       </form>
+      <?php endif ?>
     </div>
   </div>
   <?php include "inc/sidebar.php" ?>
@@ -140,6 +200,12 @@ $categories = xiu_fetch_all("SELECT * FROM categories;");
     initialFrameHeight:450,
     autoHeight:false
   });
+  </script>
+  <script>
+      var d = new Date();
+var datestring  = d.getFullYear() + "-" +  ("0"+(d.getMonth()+1)).slice(-2)  + "-"  + ("0" + d.getDate()).slice(-2)
+                  + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+$('#created').val(datestring);
   </script>
   <script>NProgress.done()</script>
 </body>
