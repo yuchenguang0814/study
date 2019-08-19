@@ -156,7 +156,7 @@ $users = xiu_fetch_all("SELECT * FROM users");
                 <td><?php echo $key['nickname']; ?></td>
                 <td><?php echo $key['status']=='activated'?'激活':'未激活' ?></td>
                 <td class="text-center">
-                  <a href="/admin/users.php?user_id=<?php echo $key['id'] ?>" class="btn btn-default btn-xs">编辑</a>
+                  <a href="/admin/profile.php?user_id=<?php echo $key['id'] ?>" class="btn btn-default btn-xs">编辑</a>
                   <a href="/admin/delete.php?user_id=<?php echo $key['id'] ?>" class="btn btn-danger btn-xs">删除</a>
                 </td>
               </tr>

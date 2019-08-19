@@ -33,7 +33,6 @@ if($_SERVER['REQUEST_METHOD']==='GET' && isset($_GET['action']) && $_GET['action
   unset($_SESSION['current_login_user']);
 }
  ?>
-}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
